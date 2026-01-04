@@ -1,24 +1,33 @@
 use std::fs::File;
-use std::io::{BufWriter, prelude::*};
+use std::io::BufWriter;
+use std::io::prelude::Write;
 
-pub struct Pixel(pub u8, pub u8, pub u8);
+use crate::vec3::Color;
 
-pub fn write_to_file(
+pub fn write_to_file<const W: usize, const H: usize>(
     filename: &str,
-    width: u32,
-    height: u32,
-    img: &[Pixel],
+    img: &[[Color; H]; W],
 ) -> std::io::Result<()> {
     let mut file = File::create(filename)?;
-    file.write_fmt(format_args!("P6 {} {} 255\n", width, height))?;
+
+    assert!(W > 0 && H > 0);
+
+    file.write_fmt(format_args!("P6 {} {} 255\n", W, H))?;
 
     let mut buffer = BufWriter::new(file);
-    let mut total_pixels: u32 = width * height;
-    for pixel in img {
-        print!("\r{} pixels remaining to write              ", total_pixels);
-        buffer.write_all(&[pixel.0, pixel.1, pixel.2])?;
-        total_pixels -= 1;
+    let mut total_pixels = W * H;
+    for row in img {
+        for pixel in row.iter() {
+            print!("\r{} pixels remaining to write              ", total_pixels);
+            buffer.write_all(&[
+                (pixel.x * 255.999) as u8,
+                (pixel.y * 255.999) as u8,
+                (pixel.z * 255.999) as u8,
+            ])?;
+            total_pixels -= 1;
+        }
     }
-    println!("\nOutput written to {filename}");
+    println!("\rAll pixels were written successfully !              ");
+    println!("Output written to {filename}");
     Ok(())
 }
