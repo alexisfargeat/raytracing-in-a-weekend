@@ -21,6 +21,8 @@ pub trait VecOps {
     fn dot(&self, other: &Self) -> f64;
 
     fn cross(&self, other: &Self) -> Self;
+
+    fn unit_vector(&self) -> Self;
 }
 
 impl Add for Vec3 {
@@ -94,5 +96,9 @@ impl VecOps for Vec3 {
             y: self.y * other.z - self.z * other.y,
             z: self.z * other.x - self.x * other.z,
         }
+    }
+
+    fn unit_vector(&self) -> Self {
+        *self / self.norm()
     }
 }
