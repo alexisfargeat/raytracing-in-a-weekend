@@ -1,5 +1,8 @@
 use rt::camera::Camera;
-use rt::file::{ImageParameters, write_image_to_file};
+use rt::file::ImageParameters;
+use rt::file::write_image_to_file;
+use rt::objects::Object;
+use rt::objects::sphere::Sphere;
 use rt::ray::Ray;
 use rt::vec3::{Color, Point3, Vec3};
 
@@ -28,6 +31,15 @@ fn main() -> std::io::Result<()> {
         height: IMAGE_HEIGHT,
     };
 
+    let sphere = Sphere {
+        center: Point3 {
+            x: 0.0,
+            y: 0.0,
+            z: 3.0,
+        },
+        radius: 1.0,
+    };
+
     let color_function = |x: usize, y: usize| -> Color {
         let ray_direction: Vec3 = camera.pixel_center(x, y, &image_parameters) - camera.center;
 
@@ -36,7 +48,11 @@ fn main() -> std::io::Result<()> {
             direction: ray_direction,
         };
 
-        ray.color()
+        if sphere.intersect(&ray) {
+            sphere.color()
+        } else {
+            ray.color()
+        }
     };
 
     write_image_to_file("test.ppm", &image_parameters, color_function)?;
