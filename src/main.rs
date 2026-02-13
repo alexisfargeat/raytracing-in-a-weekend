@@ -35,9 +35,9 @@ fn main() -> std::io::Result<()> {
         center: Point3 {
             x: 0.0,
             y: 0.0,
-            z: 3.0,
+            z: -1.0,
         },
-        radius: 1.0,
+        radius: 0.5,
     };
 
     let color_function = |x: usize, y: usize| -> Color {
@@ -48,8 +48,8 @@ fn main() -> std::io::Result<()> {
             direction: ray_direction,
         };
 
-        if sphere.intersect(&ray) {
-            sphere.color()
+        if sphere.intersect(&ray) >= 0.0 {
+            sphere.color(&ray)
         } else {
             ray.color()
         }
