@@ -1,10 +1,12 @@
 use rt::camera::Camera;
 use rt::file::ImageParameters;
 use rt::file::write_image_to_file;
-use rt::objects::Object;
+use rt::objects::ObjectList;
 use rt::objects::sphere::Sphere;
 use rt::ray::Ray;
-use rt::vec3::{Color, Point3, Vec3};
+use rt::vec3::Color;
+use rt::vec3::Point3;
+use rt::vec3::Vec3;
 
 fn main() -> std::io::Result<()> {
     // image constants
@@ -31,14 +33,35 @@ fn main() -> std::io::Result<()> {
         height: IMAGE_HEIGHT,
     };
 
-    let sphere = Sphere {
+    let mut world: ObjectList = ObjectList::default();
+
+    // small sphere
+    world.add(&Sphere {
         center: Point3 {
             x: 0.0,
             y: 0.0,
             z: -1.0,
         },
         radius: 0.5,
-    };
+    });
+
+    // big sphere
+    world.add(&Sphere {
+        center: Point3 {
+            x: 0.0,
+            y: -100.5,
+            z: -1.0,
+        },
+        radius: 100.0,
+    });
+
+    pub fn color(normal_vector: Vec3) -> Color {
+        0.5 * Color {
+            x: normal_vector.x + 1.0,
+            y: normal_vector.y + 1.0,
+            z: normal_vector.z + 1.0,
+        }
+    }
 
     let color_function = |x: usize, y: usize| -> Color {
         let ray_direction: Vec3 = camera.pixel_center(x, y, &image_parameters) - camera.center;
@@ -48,11 +71,11 @@ fn main() -> std::io::Result<()> {
             direction: ray_direction,
         };
 
-        let hit = sphere.hit(&ray, 0.0, f64::MAX);
+        let hit = world.hit(&ray, 0.0, f64::MAX);
 
         match hit {
             None => ray.color(),
-            Some(hit_record) => sphere.color(hit_record.normal),
+            Some(hit_record) => color(hit_record.normal),
         }
     };
 

@@ -1,6 +1,9 @@
-use crate::objects::{HitRecord, Object};
+use crate::objects::HitRecord;
+use crate::objects::Object;
 use crate::ray::Ray;
-use crate::vec3::{Color, Point3, Vec3, VecOps};
+use crate::vec3::Point3;
+use crate::vec3::Vec3;
+use crate::vec3::VecOps;
 
 pub struct Sphere {
     pub center: Point3,
@@ -43,15 +46,5 @@ impl Object for Sphere {
         let vector_from_center_to_point = point - self.center;
 
         vector_from_center_to_point.unit_vector()
-    }
-}
-
-impl Sphere {
-    pub fn color(&self, normal_vector: Vec3) -> Color {
-        0.5 * Color {
-            x: normal_vector.x + 1.0,
-            y: normal_vector.y + 1.0,
-            z: normal_vector.z + 1.0,
-        }
     }
 }
