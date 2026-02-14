@@ -1,12 +1,17 @@
 use crate::ray::Ray;
-use crate::vec3::{Color, Point3, Vec3};
+use crate::vec3::Point3;
+use crate::vec3::Vec3;
 
 pub mod sphere;
 
-pub trait Object {
-    fn intersect(&self, ray: &Ray) -> f64;
+pub struct HitRecord {
+    pub point: Point3,
+    pub normal: Vec3,
+    pub t: f64,
+}
 
-    fn color(&self, ray: &Ray) -> Color;
+pub trait Object {
+    fn hit(&self, ray: &Ray, ray_tmin: f64, ray_tmax: f64) -> Option<HitRecord>;
 
     fn normal(&self, point: Point3) -> Vec3;
 }

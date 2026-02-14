@@ -1,4 +1,4 @@
-use crate::objects::Object;
+use crate::objects::{HitRecord, Object};
 use crate::ray::Ray;
 use crate::vec3::{Color, Point3, Vec3, VecOps};
 
@@ -8,7 +8,7 @@ pub struct Sphere {
 }
 
 impl Object for Sphere {
-    fn intersect(&self, ray: &Ray) -> f64 {
+    fn hit(&self, ray: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
         // return true if the following polynomial admit at least a root
         // P(X) = d.d X^2 - 2 d.(C - Q) X + (C - Q) . (C - Q) - r^2
         // where Ray(t) = Q + t * d, C (resp. r) is the center (resp. radius) of the sphere,
@@ -22,22 +22,20 @@ impl Object for Sphere {
         let discriminant = h * h - a * c;
 
         if discriminant < 0.0 {
-            -1.0
+            None
         } else {
-            (h - discriminant.sqrt()) / a
-        }
-    }
+            let candidate_t = (h - discriminant.sqrt()) / a;
 
-    fn color(&self, ray: &Ray) -> Color {
-        let intersection_point = self.intersect(ray);
-        assert!(intersection_point >= 0.0);
-
-        let normal_vector = self.normal(ray.at(intersection_point));
-
-        0.5 * Color {
-            x: normal_vector.x + 1.0,
-            y: normal_vector.y + 1.0,
-            z: normal_vector.z + 1.0,
+            if candidate_t >= tmin && candidate_t <= tmax {
+                let hit_point = ray.at(candidate_t);
+                Some(HitRecord {
+                    point: hit_point,
+                    normal: self.normal(hit_point),
+                    t: candidate_t,
+                })
+            } else {
+                None
+            }
         }
     }
 
@@ -45,5 +43,15 @@ impl Object for Sphere {
         let vector_from_center_to_point = point - self.center;
 
         vector_from_center_to_point.unit_vector()
+    }
+}
+
+impl Sphere {
+    pub fn color(&self, normal_vector: Vec3) -> Color {
+        0.5 * Color {
+            x: normal_vector.x + 1.0,
+            y: normal_vector.y + 1.0,
+            z: normal_vector.z + 1.0,
+        }
     }
 }

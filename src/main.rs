@@ -48,10 +48,11 @@ fn main() -> std::io::Result<()> {
             direction: ray_direction,
         };
 
-        if sphere.intersect(&ray) >= 0.0 {
-            sphere.color(&ray)
-        } else {
-            ray.color()
+        let hit = sphere.hit(&ray, 0.0, f64::MAX);
+
+        match hit {
+            None => ray.color(),
+            Some(hit_record) => sphere.color(hit_record.normal),
         }
     };
 
