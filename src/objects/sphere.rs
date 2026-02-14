@@ -26,20 +26,19 @@ impl Object for Sphere {
         let discriminant = h * h - a * c;
 
         if discriminant < 0.0 {
-            None
-        } else {
-            let candidate_t = (h - discriminant.sqrt()) / a;
+            return None;
+        }
 
-            if ray_t.contains(candidate_t) {
-                let hit_point = ray.at(candidate_t);
-                Some(HitRecord {
-                    point: hit_point,
-                    normal: self.normal(hit_point),
-                    t: candidate_t,
-                })
-            } else {
-                None
-            }
+        let min_root = (h - discriminant.sqrt()) / a;
+        let max_root = (h + discriminant.sqrt()) / a;
+        if ray_t.contains(min_root) {
+            let hit_point = ray.at(min_root);
+            Some(HitRecord::new(hit_point, self.normal(hit_point), min_root))
+        } else if ray_t.contains(max_root) {
+            let hit_point = ray.at(max_root);
+            Some(HitRecord::new(hit_point, self.normal(hit_point), max_root))
+        } else {
+            None
         }
     }
 

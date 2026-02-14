@@ -11,6 +11,12 @@ pub struct HitRecord {
     pub t: f64,
 }
 
+impl HitRecord {
+    pub const fn new(point: Point3, normal: Vec3, t: f64) -> Self {
+        HitRecord { point, normal, t }
+    }
+}
+
 pub trait Object {
     /// Compute the hit point (if any) between the Object and a Ray between t_min and t_max
     fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord>;
