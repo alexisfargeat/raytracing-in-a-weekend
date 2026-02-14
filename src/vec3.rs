@@ -102,3 +102,34 @@ impl VecOps for Vec3 {
         *self / self.norm()
     }
 }
+
+impl Vec3 {
+    pub const fn new(x: f64, y: f64, z: f64) -> Self {
+        Self { x, y, z }
+    }
+
+    fn random(min: f64, max: f64) -> Vec3 {
+        Vec3::new(
+            rand::random_range(min..max),
+            rand::random_range(min..max),
+            rand::random_range(min..max),
+        )
+    }
+
+    pub fn random_unit() -> Vec3 {
+        loop {
+            let candidate = Self::random(-1.0, 1.0);
+            let candidate_length = candidate.dot(&candidate);
+
+            if candidate_length <= 1.0 && candidate_length > 1e-160 {
+                return candidate.unit_vector();
+            }
+        }
+    }
+
+    pub fn random_unit_on_hemisphere(normal: &Vec3) -> Vec3 {
+        let random_vector = Self::random_unit();
+
+        random_vector.dot(normal).signum() * random_vector
+    }
+}

@@ -1,4 +1,5 @@
 use std::fs::File;
+use std::io;
 use std::io::BufWriter;
 use std::io::prelude::Write;
 
@@ -33,6 +34,7 @@ pub fn write_image_to_file<T: Fn(usize, usize) -> Color>(
         for column_number in 0..params.width {
             if total_pixels.is_multiple_of(2000) {
                 print!("\r{} pixels remaining to write              ", total_pixels);
+                io::stdout().flush()?;
             }
 
             let mut color_sum: Color = Color::default();

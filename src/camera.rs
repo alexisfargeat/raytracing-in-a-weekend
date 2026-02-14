@@ -2,7 +2,6 @@ use crate::file::ImageParameters;
 use crate::file::write_image_to_file;
 use crate::objects::ObjectList;
 use crate::ray::Ray;
-use crate::utils::Interval;
 use crate::vec3::Color;
 use crate::vec3::Point3;
 use crate::vec3::Vec3;
@@ -13,6 +12,7 @@ pub struct Camera {
     pub viewport_width: f64,
     pub viewport_height: f64,
     pub samples_per_pixel: usize,
+    pub max_depth: usize,
 }
 
 impl Camera {
@@ -73,14 +73,6 @@ impl Camera {
         world: &ObjectList,
         image_params: &ImageParameters,
     ) -> std::io::Result<()> {
-        pub fn color(normal_vector: Vec3) -> Color {
-            0.5 * Color {
-                x: normal_vector.x + 1.0,
-                y: normal_vector.y + 1.0,
-                z: normal_vector.z + 1.0,
-            }
-        }
-
         let color_function = |x: usize, y: usize| -> Color {
             let ray_direction: Vec3 =
                 self.pixel_position_randomized(x, y, image_params) - self.center;
@@ -90,12 +82,7 @@ impl Camera {
                 direction: ray_direction,
             };
 
-            let hit = world.hit(&ray, Interval::new(0.0, f64::MAX));
-
-            match hit {
-                None => ray.color(),
-                Some(hit_record) => color(hit_record.normal),
-            }
+            ray.color(world, self.max_depth)
         };
 
         write_image_to_file(
