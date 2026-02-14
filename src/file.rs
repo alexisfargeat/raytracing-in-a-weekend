@@ -2,12 +2,15 @@ use std::fs::File;
 use std::io::BufWriter;
 use std::io::prelude::Write;
 
+use crate::utils::Interval;
 use crate::vec3::Color;
 
 pub struct ImageParameters {
     pub width: usize,
     pub height: usize,
 }
+
+const COLOR_INTERVAL: Interval = Interval::new(0.0, 0.999999);
 
 pub fn write_image_to_file<T: Fn(usize, usize) -> Color>(
     filename: &str,
@@ -30,9 +33,9 @@ pub fn write_image_to_file<T: Fn(usize, usize) -> Color>(
             print!("\r{} pixels remaining to write              ", total_pixels);
             let pixel_color = color_function(column_number, row_number);
             buffer.write_all(&[
-                (pixel_color.x * 255.999) as u8,
-                (pixel_color.y * 255.999) as u8,
-                (pixel_color.z * 255.999) as u8,
+                (COLOR_INTERVAL.clamp(pixel_color.x) * 256.0) as u8,
+                (COLOR_INTERVAL.clamp(pixel_color.y) * 256.0) as u8,
+                (COLOR_INTERVAL.clamp(pixel_color.z) * 256.0) as u8,
             ])?;
             total_pixels -= 1;
         }
