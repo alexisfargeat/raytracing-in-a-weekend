@@ -27,6 +27,7 @@ fn main() -> std::io::Result<()> {
         focal_length: 1.0,
         viewport_width: VIEWPORT_WIDTH,
         viewport_height: VIEWPORT_HEIGHT,
+        samples_per_pixel: 100,
     };
 
     let mut world: ObjectList = ObjectList::default();

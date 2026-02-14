@@ -12,6 +12,7 @@ pub struct Camera {
     pub focal_length: f64,
     pub viewport_width: f64,
     pub viewport_height: f64,
+    pub samples_per_pixel: usize,
 }
 
 impl Camera {
@@ -56,6 +57,17 @@ impl Camera {
             + (y as f64 + 0.5) * self.delta_v(image_params)
     }
 
+    fn pixel_position_randomized(
+        &self,
+        x: usize,
+        y: usize,
+        image_params: &ImageParameters,
+    ) -> Point3 {
+        self.pixel_center(x, y, image_params)
+            + (rand::random::<f64>() - 0.5) * self.delta_u(image_params)
+            + (rand::random::<f64>() - 0.5) * self.delta_v(image_params)
+    }
+
     pub fn render(
         &self,
         world: &ObjectList,
@@ -70,7 +82,8 @@ impl Camera {
         }
 
         let color_function = |x: usize, y: usize| -> Color {
-            let ray_direction: Vec3 = self.pixel_center(x, y, image_params) - self.center;
+            let ray_direction: Vec3 =
+                self.pixel_position_randomized(x, y, image_params) - self.center;
 
             let ray = Ray {
                 origin: self.center,
@@ -85,7 +98,12 @@ impl Camera {
             }
         };
 
-        write_image_to_file("test.ppm", image_params, color_function)?;
+        write_image_to_file(
+            "test.ppm",
+            image_params,
+            color_function,
+            self.samples_per_pixel,
+        )?;
 
         Ok(())
     }

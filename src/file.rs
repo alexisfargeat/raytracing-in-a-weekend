@@ -16,6 +16,7 @@ pub fn write_image_to_file<T: Fn(usize, usize) -> Color>(
     filename: &str,
     params: &ImageParameters,
     color_function: T,
+    samples_per_pixel: usize,
 ) -> std::io::Result<()> {
     let mut file = File::create(filename)?;
 
@@ -30,8 +31,16 @@ pub fn write_image_to_file<T: Fn(usize, usize) -> Color>(
     let mut total_pixels = params.width * params.height;
     for row_number in 0..params.height {
         for column_number in 0..params.width {
-            print!("\r{} pixels remaining to write              ", total_pixels);
-            let pixel_color = color_function(column_number, row_number);
+            if total_pixels.is_multiple_of(2000) {
+                print!("\r{} pixels remaining to write              ", total_pixels);
+            }
+
+            let mut color_sum: Color = Color::default();
+            for _ in 0..samples_per_pixel {
+                color_sum = color_sum + color_function(column_number, row_number);
+            }
+
+            let pixel_color = color_sum / (samples_per_pixel as f64);
             buffer.write_all(&[
                 (COLOR_INTERVAL.clamp(pixel_color.x) * 256.0) as u8,
                 (COLOR_INTERVAL.clamp(pixel_color.y) * 256.0) as u8,
