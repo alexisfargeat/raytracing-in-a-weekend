@@ -13,6 +13,18 @@ pub struct ImageParameters {
 
 const COLOR_INTERVAL: Interval = Interval::new(0.0, 0.999999);
 
+fn linear_to_gamma(linear_component: f64) -> f64 {
+    if linear_component.is_sign_positive() {
+        linear_component.sqrt()
+    } else {
+        0.0
+    }
+}
+
+fn linear_to_u8(linear_component: f64) -> u8 {
+    (linear_to_gamma(COLOR_INTERVAL.clamp(linear_component)) * 256.0) as u8
+}
+
 pub fn write_image_to_file<T: Fn(usize, usize) -> Color>(
     filename: &str,
     params: &ImageParameters,
@@ -44,9 +56,9 @@ pub fn write_image_to_file<T: Fn(usize, usize) -> Color>(
 
             let pixel_color = color_sum / (samples_per_pixel as f64);
             buffer.write_all(&[
-                (COLOR_INTERVAL.clamp(pixel_color.x) * 256.0) as u8,
-                (COLOR_INTERVAL.clamp(pixel_color.y) * 256.0) as u8,
-                (COLOR_INTERVAL.clamp(pixel_color.z) * 256.0) as u8,
+                linear_to_u8(pixel_color.x),
+                linear_to_u8(pixel_color.y),
+                linear_to_u8(pixel_color.z),
             ])?;
             total_pixels -= 1;
         }
