@@ -4,6 +4,7 @@ use rt::file::write_image_to_file;
 use rt::objects::ObjectList;
 use rt::objects::sphere::Sphere;
 use rt::ray::Ray;
+use rt::utils::Interval;
 use rt::vec3::Color;
 use rt::vec3::Point3;
 use rt::vec3::Vec3;
@@ -71,7 +72,7 @@ fn main() -> std::io::Result<()> {
             direction: ray_direction,
         };
 
-        let hit = world.hit(&ray, 0.0, f64::MAX);
+        let hit = world.hit(&ray, Interval::new(0.0, f64::MAX));
 
         match hit {
             None => ray.color(),

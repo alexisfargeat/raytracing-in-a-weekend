@@ -1,6 +1,7 @@
 use crate::objects::HitRecord;
 use crate::objects::Object;
 use crate::ray::Ray;
+use crate::utils::Interval;
 use crate::vec3::Point3;
 use crate::vec3::Vec3;
 use crate::vec3::VecOps;
@@ -11,7 +12,7 @@ pub struct Sphere {
 }
 
 impl Object for Sphere {
-    fn hit(&self, ray: &Ray, tmin: f64, tmax: f64) -> Option<HitRecord> {
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord> {
         // return true if the following polynomial admit at least a root
         // P(X) = d.d X^2 - 2 d.(C - Q) X + (C - Q) . (C - Q) - r^2
         // where Ray(t) = Q + t * d, C (resp. r) is the center (resp. radius) of the sphere,
@@ -29,7 +30,7 @@ impl Object for Sphere {
         } else {
             let candidate_t = (h - discriminant.sqrt()) / a;
 
-            if candidate_t >= tmin && candidate_t <= tmax {
+            if ray_t.contains(candidate_t) {
                 let hit_point = ray.at(candidate_t);
                 Some(HitRecord {
                     point: hit_point,

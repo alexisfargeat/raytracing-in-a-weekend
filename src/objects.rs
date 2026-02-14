@@ -1,4 +1,5 @@
 use crate::ray::Ray;
+use crate::utils::Interval;
 use crate::vec3::Point3;
 use crate::vec3::Vec3;
 
@@ -12,7 +13,7 @@ pub struct HitRecord {
 
 pub trait Object {
     /// Compute the hit point (if any) between the Object and a Ray between t_min and t_max
-    fn hit(&self, ray: &Ray, ray_tmin: f64, ray_tmax: f64) -> Option<HitRecord>;
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord>;
 
     fn normal(&self, point: Point3) -> Vec3;
 }
@@ -28,12 +29,12 @@ impl<'a> ObjectList<'a> {
     }
 
     /// Compute the first hit Object (if any) on the path of a Ray between t_min and t_max
-    pub fn hit(&self, ray: &Ray, ray_tmin: f64, ray_tmax: f64) -> Option<HitRecord> {
+    pub fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord> {
         let mut result_record: Option<HitRecord> = None;
-        let mut closest_so_far = ray_tmax;
+        let mut closest_so_far = ray_t.max();
 
         for obj in &self.objects {
-            let hit_point = obj.hit(ray, ray_tmin, ray_tmax);
+            let hit_point = obj.hit(ray, Interval::new(ray_t.min(), closest_so_far));
 
             if let Some(record) = hit_point
                 && record.t <= closest_so_far
