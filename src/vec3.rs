@@ -149,4 +149,7 @@ impl Vec3 {
         self.norm() < 1e-8
     }
 
+    pub fn reflect(&self, normal: &Vec3) -> Vec3 {
+        *self - 2.0 * self.dot(normal) * *normal
+    }
 }

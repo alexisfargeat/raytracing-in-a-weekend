@@ -3,6 +3,7 @@ use crate::ray::Ray;
 use crate::vec3::Color;
 
 pub mod lambertian;
+pub mod metal;
 
 pub struct Scatter {
     pub ray: Ray,

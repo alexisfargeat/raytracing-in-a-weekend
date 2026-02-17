@@ -1,6 +1,7 @@
 use rt::camera::Camera;
 use rt::file::ImageParameters;
 use rt::materials::lambertian::Lambertian;
+use rt::materials::metal::Metal;
 use rt::objects::ObjectList;
 use rt::objects::sphere::Sphere;
 use rt::vec3::Color;
@@ -41,6 +42,14 @@ fn main() -> std::io::Result<()> {
         },
     };
 
+    let blue_metal = Metal {
+        albedo: Color {
+            x: 0.2,
+            y: 0.2,
+            z: 0.8,
+        },
+    };
+
     let mut world: ObjectList = ObjectList::default();
 
     // small sphere
@@ -52,6 +61,17 @@ fn main() -> std::io::Result<()> {
         },
         radius: 0.5,
         material: &red_lambertian,
+    });
+
+    // metal sphere
+    world.add(Sphere {
+        center: Point3 {
+            x: -1.5,
+            y: 0.0,
+            z: -2.0,
+        },
+        radius: 0.5,
+        material: &blue_metal,
     });
 
     // big sphere
