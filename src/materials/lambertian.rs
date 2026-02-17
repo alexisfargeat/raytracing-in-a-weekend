@@ -14,8 +14,7 @@ impl Material for Lambertian {
         _: &crate::ray::Ray,
         hit_record: &crate::objects::HitRecord,
     ) -> Option<Scatter> {
-        let mut scatter_direction =
-            hit_record.normal + Vec3::random_unit_on_hemisphere(&hit_record.normal);
+        let mut scatter_direction = hit_record.normal + Vec3::random_unit();
 
         if scatter_direction.near_zero() {
             scatter_direction = hit_record.normal;
