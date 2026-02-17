@@ -73,6 +73,18 @@ impl Mul<Vec3> for f64 {
     }
 }
 
+impl Mul<Vec3> for Vec3 {
+    type Output = Vec3;
+
+    fn mul(self, rhs: Vec3) -> Self::Output {
+        Vec3 {
+            x: self.x * rhs.x,
+            y: self.y * rhs.y,
+            z: self.z * rhs.z,
+        }
+    }
+}
+
 impl Div<f64> for Vec3 {
     type Output = Vec3;
 
@@ -132,4 +144,9 @@ impl Vec3 {
 
         random_vector.dot(normal).signum() * random_vector
     }
+
+    pub fn near_zero(&self) -> bool {
+        self.norm() < 1e-8
+    }
+
 }

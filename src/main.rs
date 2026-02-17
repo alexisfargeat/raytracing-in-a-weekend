@@ -1,7 +1,9 @@
 use rt::camera::Camera;
 use rt::file::ImageParameters;
+use rt::materials::lambertian::Lambertian;
 use rt::objects::ObjectList;
 use rt::objects::sphere::Sphere;
+use rt::vec3::Color;
 use rt::vec3::Point3;
 
 fn main() -> std::io::Result<()> {
@@ -24,33 +26,43 @@ fn main() -> std::io::Result<()> {
             y: 0.0,
             z: 0.0,
         },
-        focal_length: 1.0,
+        focal_length: 1.5,
         viewport_width: VIEWPORT_WIDTH,
         viewport_height: VIEWPORT_HEIGHT,
         samples_per_pixel: 50,
         max_depth: 10,
     };
 
+    let red_lambertian = Lambertian {
+        albedo: Color {
+            x: 1.0,
+            y: 0.2,
+            z: 0.2,
+        },
+    };
+
     let mut world: ObjectList = ObjectList::default();
 
     // small sphere
-    world.add(&Sphere {
+    world.add(Sphere {
         center: Point3 {
             x: 0.0,
             y: 0.0,
-            z: -1.0,
+            z: -2.0,
         },
         radius: 0.5,
+        material: &red_lambertian,
     });
 
     // big sphere
-    world.add(&Sphere {
+    world.add(Sphere {
         center: Point3 {
             x: 0.0,
             y: -100.5,
             z: -1.0,
         },
         radius: 100.0,
+        material: &red_lambertian,
     });
 
     camera.render(&world, &image_parameters)?;

@@ -1,5 +1,6 @@
 pub mod camera;
 pub mod file;
+pub mod materials;
 pub mod objects;
 pub mod ray;
 pub mod utils;

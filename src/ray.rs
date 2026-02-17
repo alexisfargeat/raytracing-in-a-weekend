@@ -39,13 +39,11 @@ impl Ray {
         }
 
         if let Some(record) = world.hit(self, Interval::new(0.0001, f64::MAX)) {
-            let direction = record.normal + Vec3::random_unit_on_hemisphere(&record.normal);
-            let new_ray = Ray {
-                origin: record.point,
-                direction,
-            };
+            if let Some(scatter) = record.material.scatter(self, &record) {
+                return scatter.attenuation * scatter.ray.color(world, depth - 1);
+            }
 
-            return 0.5 * new_ray.color(world, depth - 1);
+            return BLACK;
         }
 
         let unit_direction = self.direction.unit_vector();

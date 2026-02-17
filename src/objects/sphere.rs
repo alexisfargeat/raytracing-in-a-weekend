@@ -1,3 +1,4 @@
+use crate::materials::Material;
 use crate::objects::HitRecord;
 use crate::objects::Object;
 use crate::ray::Ray;
@@ -6,13 +7,14 @@ use crate::vec3::Point3;
 use crate::vec3::Vec3;
 use crate::vec3::VecOps;
 
-pub struct Sphere {
+pub struct Sphere<'a> {
     pub center: Point3,
     pub radius: f64,
+    pub material: &'a dyn Material,
 }
 
-impl Object for Sphere {
-    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord> {
+impl<'a> Object<'a> for Sphere<'a> {
+    fn hit(&self, ray: &Ray, ray_t: Interval) -> Option<HitRecord<'a>> {
         // return true if the following polynomial admit at least a root
         // P(X) = d.d X^2 - 2 d.(C - Q) X + (C - Q) . (C - Q) - r^2
         // where Ray(t) = Q + t * d, C (resp. r) is the center (resp. radius) of the sphere,
@@ -33,10 +35,20 @@ impl Object for Sphere {
         let max_root = (h + discriminant.sqrt()) / a;
         if ray_t.contains(min_root) {
             let hit_point = ray.at(min_root);
-            Some(HitRecord::new(hit_point, self.normal(hit_point), min_root))
+            Some(HitRecord::new(
+                hit_point,
+                self.normal(hit_point),
+                self.material,
+                min_root,
+            ))
         } else if ray_t.contains(max_root) {
             let hit_point = ray.at(max_root);
-            Some(HitRecord::new(hit_point, self.normal(hit_point), max_root))
+            Some(HitRecord::new(
+                hit_point,
+                self.normal(hit_point),
+                self.material,
+                max_root,
+            ))
         } else {
             None
         }
