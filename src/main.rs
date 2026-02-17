@@ -42,13 +42,23 @@ fn main() -> std::io::Result<()> {
         },
     };
 
-    let blue_metal = Metal {
-        albedo: Color {
+    let blue_fuzzy_metal = Metal::new(
+        Color {
             x: 0.2,
             y: 0.2,
             z: 0.8,
         },
-    };
+        0.8,
+    );
+
+    let green_clean_metal = Metal::new(
+        Color {
+            x: 0.2,
+            y: 0.8,
+            z: 0.2,
+        },
+        0.0,
+    );
 
     let mut world: ObjectList = ObjectList::default();
 
@@ -63,7 +73,7 @@ fn main() -> std::io::Result<()> {
         material: &red_lambertian,
     });
 
-    // metal sphere
+    // first metal sphere
     world.add(Sphere {
         center: Point3 {
             x: -1.5,
@@ -71,7 +81,18 @@ fn main() -> std::io::Result<()> {
             z: -2.0,
         },
         radius: 0.5,
-        material: &blue_metal,
+        material: &blue_fuzzy_metal,
+    });
+
+    // second metal sphere
+    world.add(Sphere {
+        center: Point3 {
+            x: 1.5,
+            y: 0.0,
+            z: -2.0,
+        },
+        radius: 0.5,
+        material: &green_clean_metal,
     });
 
     // big sphere
