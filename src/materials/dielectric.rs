@@ -32,11 +32,14 @@ impl Material for Dielectric {
         let cos_theta = -unit_direction.dot(&normal);
         let sin_theta = (1.0 - cos_theta.powi(2)).sqrt();
 
-        let scattered_ray_direction = if refraction_index * sin_theta <= 1.0 {
-            unit_direction.refract(&normal, refraction_index)
-        } else {
-            unit_direction.reflect(&normal)
-        };
+        let cannot_refract = refraction_index * sin_theta > 1.0;
+
+        let scattered_ray_direction =
+            if cannot_refract || reflectance(cos_theta, refraction_index) > rand::random() {
+                unit_direction.reflect(&normal)
+            } else {
+                unit_direction.refract(&normal, refraction_index)
+            };
 
         // let scattered_ray_direction = unit_direction.refract(&normal, refraction_index);
 
@@ -48,4 +51,10 @@ impl Material for Dielectric {
             attenuation: self.attenuation,
         })
     }
+}
+
+fn reflectance(cosine: f64, refraction_index: f64) -> f64 {
+    // uses Schlick's approximation
+    let r0 = ((1.0 - refraction_index) / (1.0 + refraction_index)).powi(2);
+    r0 + (1.0 - r0) * (1.0 - cosine).powi(5)
 }
