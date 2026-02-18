@@ -52,8 +52,17 @@ fn main() -> std::io::Result<()> {
         0.8,
     );
 
-    let clear_dielectric = Dielectric::new(
+    let clear_glass = Dielectric::new(
         1.5,
+        Color {
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
+        },
+    );
+
+    let clear_air_bubble = Dielectric::new(
+        1.0 / 1.5,
         Color {
             x: 1.0,
             y: 1.0,
@@ -93,7 +102,17 @@ fn main() -> std::io::Result<()> {
             z: -2.0,
         },
         radius: 0.5,
-        material: &clear_dielectric,
+        material: &clear_glass,
+    });
+
+    world.add(Sphere {
+        center: Point3 {
+            x: 1.5,
+            y: 0.0,
+            z: -2.0,
+        },
+        radius: 0.4,
+        material: &clear_air_bubble,
     });
 
     // ball behind the glass
