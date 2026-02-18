@@ -2,6 +2,7 @@ use crate::objects::HitRecord;
 use crate::ray::Ray;
 use crate::vec3::Color;
 
+pub mod dielectric;
 pub mod lambertian;
 pub mod metal;
 

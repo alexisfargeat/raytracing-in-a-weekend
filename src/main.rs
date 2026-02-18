@@ -1,5 +1,6 @@
 use rt::camera::Camera;
 use rt::file::ImageParameters;
+use rt::materials::dielectric::Dielectric;
 use rt::materials::lambertian::Lambertian;
 use rt::materials::metal::Metal;
 use rt::objects::ObjectList;
@@ -24,10 +25,10 @@ fn main() -> std::io::Result<()> {
     let camera: Camera = Camera {
         center: Point3 {
             x: 0.0,
-            y: 0.0,
-            z: 0.0,
+            y: 0.5,
+            z: 10.0,
         },
-        focal_length: 1.5,
+        focal_length: 6.0,
         viewport_width: VIEWPORT_WIDTH,
         viewport_height: VIEWPORT_HEIGHT,
         samples_per_pixel: 50,
@@ -51,13 +52,13 @@ fn main() -> std::io::Result<()> {
         0.8,
     );
 
-    let green_clean_metal = Metal::new(
+    let clear_dielectric = Dielectric::new(
+        1.5,
         Color {
-            x: 0.2,
-            y: 0.8,
-            z: 0.2,
+            x: 1.0,
+            y: 1.0,
+            z: 1.0,
         },
-        0.0,
     );
 
     let mut world: ObjectList = ObjectList::default();
@@ -84,7 +85,7 @@ fn main() -> std::io::Result<()> {
         material: &blue_fuzzy_metal,
     });
 
-    // second metal sphere
+    // glass sphere
     world.add(Sphere {
         center: Point3 {
             x: 1.5,
@@ -92,7 +93,18 @@ fn main() -> std::io::Result<()> {
             z: -2.0,
         },
         radius: 0.5,
-        material: &green_clean_metal,
+        material: &clear_dielectric,
+    });
+
+    // ball behind the glass
+    world.add(Sphere {
+        center: Point3 {
+            x: 1.0,
+            y: 0.25,
+            z: -5.0,
+        },
+        radius: 0.25,
+        material: &red_lambertian,
     });
 
     // big sphere

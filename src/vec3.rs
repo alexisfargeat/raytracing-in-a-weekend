@@ -120,15 +120,15 @@ impl Vec3 {
         Self { x, y, z }
     }
 
-    fn random(min: f64, max: f64) -> Vec3 {
-        Vec3::new(
+    fn random(min: f64, max: f64) -> Self {
+        Self::new(
             rand::random_range(min..max),
             rand::random_range(min..max),
             rand::random_range(min..max),
         )
     }
 
-    pub fn random_unit() -> Vec3 {
+    pub fn random_unit() -> Self {
         loop {
             let candidate = Self::random(-1.0, 1.0);
             let candidate_length = candidate.dot(&candidate);
@@ -139,7 +139,7 @@ impl Vec3 {
         }
     }
 
-    pub fn random_unit_on_hemisphere(normal: &Vec3) -> Vec3 {
+    pub fn random_unit_on_hemisphere(normal: &Self) -> Self {
         let random_vector = Self::random_unit();
 
         random_vector.dot(normal).signum() * random_vector
@@ -149,7 +149,13 @@ impl Vec3 {
         self.norm() < 1e-8
     }
 
-    pub fn reflect(&self, normal: &Vec3) -> Vec3 {
+    pub fn reflect(&self, normal: &Self) -> Self {
         *self - 2.0 * self.dot(normal) * *normal
+    }
+
+    pub fn refract(&self, normal: &Self, refraction_coef: f64) -> Self {
+        let r_out_perp = refraction_coef * (*self - self.dot(normal) * *normal);
+        let r_out_parallel = -(1.0 - r_out_perp.dot(&r_out_perp)).sqrt() * *normal;
+        r_out_perp + r_out_parallel
     }
 }
